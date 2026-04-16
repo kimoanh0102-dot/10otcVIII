@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Ôn Tập: Đại Số Tổ Hợp - Chương 8</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap');
+        body { font-family: 'Quicksand', sans-serif; background: #f4f7f6; color: #333; }
+        .glass { background: #ffffff; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border: 1px solid #e1e8ed; }
+        .intro-glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.5); }
+        .btn-grad { background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; transition: all 0.3s ease; }
+        .btn-grad:hover { background: linear-gradient(135deg, #1d4ed8 0%, #1e3a8a 100%); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
+        .mathjax-box { overflow-x: auto; max-width: 100%; }
+        .ds-btn.active-true { background-color: #10b981; color: white; border-color: #10b981; }
+        .ds-btn.active-false { background-color: #ef4444; color: white; border-color: #ef4444; }
+        .expl-list { list-style-type: none; padding-left: 0; }
+        .expl-list li { margin-bottom: 0.75rem; border-bottom: 1px dashed #e5e7eb; padding-bottom: 0.5rem; }
+        .expl-list li:last-child { border-bottom: none; }
+    </style>
+</head>
+<body class="min-h-screen pb-10">
+    <!-- MÀN HÌNH GIỚI THIỆU -->
+    <div id="intro-screen" class="max-w-6xl mx-auto px-4 pt-10 pb-10 min-h-screen flex flex-col items-center justify-center animate__animated animate__zoomIn">
+        <div class="intro-glass p-8 md:p-12 w-full text-center relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500"></div>
+            <h1 class="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 mb-6 uppercase tracking-wider">🚀 Tổng Ôn Chương 8: Đại Số Tổ Hợp 🚀</h1>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-left mb-10 mt-8">
+                <div class="bg-white p-6 rounded-2xl border-2 border-blue-100 hover:border-blue-300 hover:shadow-xl transition-all">
+                    <h3 class="text-2xl font-bold text-blue-700 mb-3 flex items-center">📊 Quy Tắc Đếm</h3>
+                    <p class="text-gray-700 font-medium mb-2 leading-relaxed">
+                        - <b>Quy tắc cộng:</b> Công việc chia làm các phương án độc lập.<br>
+                        - <b>Quy tắc nhân:</b> Công việc chia làm các công đoạn liên tiếp.
+                    </p>
+                </div>
+                <div class="bg-white p-6 rounded-2xl border-2 border-purple-100 hover:border-purple-300 hover:shadow-xl transition-all">
+                    <h3 class="text-2xl font-bold text-purple-700 mb-3 flex items-center">🎯 Chỉnh Hợp & Tổ Hợp</h3>
+                    <p class="text-gray-700 font-medium mb-2 leading-relaxed">
+                        - <b>Chỉnh hợp ($A_n^k$):</b> Chọn có phân biệt thứ tự.<br>
+                        - <b>Tổ hợp ($C_n^k$):</b> Chọn không phân biệt thứ tự.
+                    </p>
+                </div>
+                <div class="bg-white p-6 rounded-2xl border-2 border-pink-100 hover:border-pink-300 hover:shadow-xl transition-all">
+                    <h3 class="text-2xl font-bold text-pink-700 mb-3 flex items-center">✨ Nhị Thức Newton</h3>
+                    <p class="text-gray-700 font-medium mb-2 leading-relaxed">
+                        Khai triển $(a+b)^n$ có $n+1$ số hạng. <br>
+                        Số hạng tổng quát: $T_{k+1} = C_n^k a^{n-k} b^k$.
+                    </p>
+                </div>
+            </div>
+
+            <button onclick="startGame()" class="text-xl px-12 py-5 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-black rounded-full shadow-[0_10px_20px_rgba(37,99,235,0.3)] hover:shadow-[0_15px_30px_rgba(37,99,235,0.5)] hover:scale-105 transition-all duration-300 uppercase tracking-widest ring-4 ring-blue-100">
+                🕹️ Bắt Đầu Làm Bài
+            </button>
+        </div>
+    </div>
+
+    <!-- MÀN HÌNH GAME -->
+    <div id="app" class="max-w-4xl mx-auto px-4 pt-8 hidden">
+        <!-- Header & Progress -->
+        <div class="glass p-6 mb-8 animate__animated animate__fadeIn">
+            <h1 class="text-3xl font-bold text-blue-800 text-center mb-4 uppercase tracking-wide">Đề Ôn Tập: Chương 8</h1>
+            <div class="flex justify-between items-center mb-3 font-semibold text-lg">
+                <span id="part-title" class="text-blue-600 bg-blue-50 px-4 py-1 rounded-full border border-blue-100">Phần 1: Trắc nghiệm</span>
+                <span class="text-gray-600">Câu <span id="question-counter" class="text-blue-600 font-bold">1</span>/<span id="total-questions">22</span></span>
+                <span id="score" class="text-green-600 bg-green-50 px-4 py-1 rounded-full border border-green-100">Điểm: 0.00</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2.5">
+                <div id="progress-bar" class="bg-blue-600 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <!-- Game Content -->
+        <div id="game-container" class="glass p-8 min-h-[400px] animate__animated animate__fadeIn relative">
+            <!-- Render by JS -->
+        </div>
+
+        <!-- Controls -->
+        <div class="flex justify-between mt-6">
+            <button id="hint-btn" class="bg-amber-100 hover:bg-amber-200 text-amber-700 border border-amber-300 font-bold py-3 px-6 rounded-2xl shadow-sm transition hidden">💡 Xem Giải Thích</button>
+            <button id="next-btn" class="btn-grad font-bold py-3 px-10 rounded-2xl shadow-lg ml-auto hidden">Câu tiếp theo ➔</button>
+        </div>
+    </div>
+
+    <!-- Result Modal -->
+    <div id="result-modal" class="fixed inset-0 bg-gray-900 bg-opacity-80 hidden flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl p-10 max-w-md w-full text-center animate__animated animate__zoomIn shadow-2xl">
+            <div id="result-icon" class="text-7xl mb-4">🏆</div>
+            <h2 class="text-3xl font-bold text-blue-800 mb-2" id="result-name">BẠN ĐÃ HOÀN THÀNH BÀI THI</h2>
+            <div class="bg-blue-50 rounded-2xl p-6 my-6 border border-blue-100">
+                <p class="text-sm text-gray-500 font-bold mb-1 uppercase">Tổng điểm của bạn</p>
+                <p class="text-5xl font-black text-blue-600" id="result-score">10.00<span class="text-2xl text-gray-400">/10</span></p>
+            </div>
+            <button onclick="location.reload()" class="btn-grad w-full py-4 rounded-xl font-bold text-lg uppercase tracking-wider">Tạo đề & Làm lại</button>
+        </div>
+    </div>
+
+    <script>
+        // Ngân hàng 50 câu hỏi Chương 8 (Đại Số Tổ Hợp)
+    part1: [
+        // --- NHẬN BIẾT (15 câu) ---
+        { id: "c8_p1_1", level: "NB", question: "Một người có 5 cái quần khác nhau, 7 cái áo khác nhau và 4 đôi giày khác nhau. Số cách chọn 1 cái quần hoặc 1 cái áo hoặc 1 đôi giày là:", options: ["16", "12", "140", "11"], correct: 0, explanation: "Áp dụng quy tắc cộng vì các phương án lựa chọn độc lập: $5 + 7 + 4 = 16$ cách." },
+        { id: "c8_p1_2", level: "NB", question: "Quán ăn có 2 loại phở và 4 loại bún. Có bao nhiêu cách để khách hàng chọn một món ăn sáng?", options: ["8", "6", "10", "2"], correct: 1, explanation: "Khách chọn 1 món duy nhất. Dùng quy tắc cộng: $2 + 4 = 6$ cách." },
+        { id: "c8_p1_3", level: "NB", question: "Từ nhà Hùng đến nhà Huy có 6 con đường, từ Huy đến Nam có 8 con đường. Số cách Hùng đến nhà Nam (qua nhà Huy) là:", options: ["14", "48", "6", "8"], correct: 1, explanation: "Áp dụng quy tắc nhân cho 2 công đoạn liên tiếp: $6 \\times 8 = 48$ cách." },
+        { id: "c8_p1_4", level: "NB", question: "Có bao nhiêu cách xếp 7 bạn thành một hàng dọc?", options: ["1", "7", "5040", "8"], correct: 2, explanation: "Xếp 7 người vào 7 vị trí là hoán vị của 7 phần tử: $P_7 = 7! = 5040$ cách." },
+        { id: "c8_p1_5", level: "NB", question: "Có bao nhiêu vectơ (khác $\\vec{0}$) được tạo từ 8 điểm phân biệt trong mặt phẳng?", options: ["68", "56", "42", "65"], correct: 1, explanation: "Mỗi vectơ được tạo bằng cách lấy 2 điểm và có phân biệt thứ tự (điểm đầu, điểm cuối). Dùng chỉnh hợp: $A_8^2 = 56$." },
+        { id: "c8_p1_6", level: "NB", question: "Cần phân công 3 bạn từ tổ có 10 bạn để làm trực nhật (công việc như nhau). Số cách phân công là:", options: ["720", "210", "310", "120"], correct: 3, explanation: "Chọn 3 người không phân biệt thứ tự là tổ hợp chập 3 của 10: $C_{10}^3 = 120$." },
+        { id: "c8_p1_7", level: "NB", question: "Có 20 nam và 18 nữ. Có bao nhiêu cách chọn ra một đôi nam nữ để khiêu vũ?", options: ["$C_{38}^2$", "$C_{20}^1 C_{18}^1$", "$A_{38}^2$", "38"], correct: 1, explanation: "Chọn 1 nam (có $C_{20}^1$ cách) và chọn 1 nữ (có $C_{18}^1$ cách). Áp dụng quy tắc nhân: $C_{20}^1 C_{18}^1$." },
+        { id: "c8_p1_8", level: "NB", question: "Giá trị của biểu thức $0!$ bằng:", options: ["0", "1", "10", "Không xác định"], correct: 1, explanation: "Theo quy ước của toán học, $0! = 1$." },
+        { id: "c8_p1_9", level: "NB", question: "Công thức nào sau đây dùng để tính số chỉnh hợp chập k của n phần tử?", options: ["$A_n^k = \\frac{n!}{k!(n-k)!}$", "$A_n^k = \\frac{n!}{(n-k)!}$", "$A_n^k = \\frac{(n-k)!}{n!}$", "$A_n^k = n!$"], correct: 1, explanation: "Số chỉnh hợp chập $k$ của $n$ phần tử là $A_n^k = \\frac{n!}{(n-k)!}$." },
+        { id: "c8_p1_10", level: "NB", question: "Khai triển biểu thức $(x+5)^5$ có tất cả bao nhiêu số hạng?", options: ["4", "5", "6", "10"], correct: 2, explanation: "Khai triển bậc $n$ luôn có $n+1$ số hạng. Ở đây $n=5$ nên có 6 số hạng." },
+        { id: "c8_p1_11", level: "NB", question: "Tính tổng $S = C_n^0 + C_n^1 + C_n^2 + ... + C_n^n$ ta được kết quả là:", options: ["$0$", "$1$", "$2^n$", "$n^2$"], correct: 2, explanation: "Đây là hệ quả của nhị thức Newton khi cho $a=1, b=1$, tổng các hệ số bằng $2^n$." },
+        { id: "c8_p1_12", level: "NB", question: "Từ các chữ số 1, 2, 3 lập được bao nhiêu số tự nhiên có 3 chữ số khác nhau?", options: ["3", "6", "9", "27"], correct: 1, explanation: "Lập số từ 3 chữ số xếp vào 3 vị trí là bài toán hoán vị: $P_3 = 3! = 6$." },
+        { id: "c8_p1_13", level: "NB", question: "Số hạng tổng quát trong khai triển $(a+b)^n$ là:", options: ["$C_n^k a^k b^{n-k}$", "$A_n^k a^{n-k} b^k$", "$C_n^k a^{n-k} b^k$", "$P_n a^{n-k} b^k$"], correct: 2, explanation: "Số hạng tổng quát (số hạng thứ $k+1$) có dạng $T_{k+1} = C_n^k a^{n-k} b^k$." },
+        { id: "c8_p1_14", level: "NB", question: "Đẳng thức nào sau đây thể hiện tính chất đối xứng của tổ hợp?", options: ["$C_n^k = C_n^{n-k}$", "$C_{n+1}^k = C_n^k + C_n^{k-1}$", "$A_n^k = C_n^k \\times k!$", "$C_n^0 = 1$"], correct: 0, explanation: "Tính chất đối xứng: Số lượng tập con $k$ phần tử bằng số lượng tập con $n-k$ phần tử $\\Rightarrow C_n^k = C_n^{n-k}$." },
+        { id: "c8_p1_15", level: "NB", question: "Có 10 cuốn sách Toán và 5 cuốn sách Văn. Số cách chọn 1 cuốn sách bất kỳ là:", options: ["15", "50", "2", "10"], correct: 0, explanation: "Áp dụng quy tắc cộng: $10 + 5 = 15$ cách." },
+        
+        // --- THÔNG HIỂU (9 câu) ---
+        { id: "c8_p1_16", level: "TH", question: "Hộp I có 3 bi xanh, 2 bi đỏ. Hộp II có 4 bi xanh, 5 bi đỏ. Lấy mỗi hộp 1 viên bi, số cách lấy được 2 viên cùng màu là:", options: ["26", "14", "45", "22"], correct: 3, explanation: "TH1 (Cùng màu xanh): $3 \\times 4 = 12$. TH2 (Cùng màu đỏ): $2 \\times 5 = 10$. Tổng cộng: $12 + 10 = 22$ cách." },
+        { id: "c8_p1_17", level: "TH", question: "Có 3 bông hoa đỏ, 2 vàng, 4 xanh (khác nhau). Có bao nhiêu cách chọn 2 bông khác màu và PHẢI có hoa đỏ?", options: ["28", "9", "18", "48"], correct: 2, explanation: "TH1 (Đỏ và Vàng): $3 \\times 2 = 6$. TH2 (Đỏ và Xanh): $3 \\times 4 = 12$. Tổng: $6 + 12 = 18$ cách." },
+        { id: "c8_p1_18", level: "TH", question: "Từ tập $A=\\{0;1;2;3;4;5;6\\}$ lập được bao nhiêu số tự nhiên gồm 4 chữ số đôi một khác nhau?", options: ["300", "720", "418", "731"], correct: 1, explanation: "Gọi số là $\\overline{abcd}$. Chữ số đầu tiên $a \\ne 0 \\Rightarrow$ $a$ có 6 cách chọn. Chọn $b, c, d$ từ 6 chữ số còn lại $\\Rightarrow A_6^3$. Tổng: $6 \\times A_6^3 = 720$ số." },
+        { id: "c8_p1_19", level: "TH", question: "Từ các số 1, 2, 3, 4, 5, 6, 7 lập được bao nhiêu số tự nhiên có 4 chữ số phân biệt gồm đúng 2 số chẵn và 2 số lẻ?", options: ["144", "840", "432", "696"], correct: 2, explanation: "Chọn 2 số lẻ từ tập 4 số lẻ ($C_4^2$), chọn 2 số chẵn từ tập 3 số chẵn ($C_3^2$). Xếp 4 số vừa chọn vào 4 vị trí ($4!$). Tổng số cách: $C_4^2 \\times C_3^2 \\times 4! = 6 \\times 3 \\times 24 = 432$." },
+        { id: "c8_p1_20", level: "TH", question: "Đa thức nào là khai triển của $(1-2x)^5$?", options: ["$1 - 10x + 40x^2 - 80x^3 + 80x^4 - 32x^5$", "$1 + 10x + 40x^2 + 80x^3 + 80x^4 + 32x^5$", "$32x^5 - 80x^4 + 80x^3 - 40x^2 + 10x - 1$", "$1 - 2x + 4x^2 - 8x^3 + 16x^4 - 32x^5$"], correct: 0, explanation: "Sử dụng công thức nhị thức Newton, ta có các hệ số đan dấu $+ - + -$ và số hạng cuối là $(-2x)^5 = -32x^5$. Khai triển cụ thể là $1 - 10x + 40x^2 - 80x^3 + 80x^4 - 32x^5$." },
+        { id: "c8_p1_21", level: "TH", question: "Nhóm có 6 nam và 4 nữ. Số cách chọn 3 người có đúng 1 nữ là:", options: ["120", "60", "24", "4"], correct: 1, explanation: "Chọn 1 nữ ($C_4^1 = 4$) và 2 nam ($C_6^2 = 15$). Tổng số cách: $4 \\times 15 = 60$." },
+        { id: "c8_p1_22", level: "TH", question: "Số đường chéo của đa giác lồi có 10 cạnh là:", options: ["35", "45", "90", "100"], correct: 0, explanation: "Mỗi đường chéo được nối từ 2 đỉnh nhưng phải loại bỏ đi 10 cạnh của đa giác. Công thức: $C_{10}^2 - 10 = 45 - 10 = 35$." },
+        { id: "c8_p1_23", level: "TH", question: "Tìm hệ số của $x^2$ trong khai triển $(x+3)^4$.", options: ["6", "18", "54", "27"], correct: 2, explanation: "Số hạng chứa $x^2$ ứng với $k=2$: $C_4^2 \\times x^2 \\times 3^2 = 6 \\times 9 \\times x^2 = 54x^2$. Hệ số là 54." },
+        { id: "c8_p1_24", level: "TH", question: "Từ 5 điểm trên đường tròn, số tam giác tạo thành là:", options: ["10", "15", "20", "60"], correct: 0, explanation: "5 điểm trên đường tròn nên chắc chắn không có 3 điểm nào thẳng hàng. Số tam giác là tổ hợp chập 3 của 5: $C_5^3 = 10$." },
+        
+        // --- VẬN DỤNG (6 câu) ---
+        { id: "c8_p1_25", level: "VD", question: "Từ $A=\\{0;1;2;3;4;5;6\\}$ lập được bao nhiêu số chẵn có 5 chữ số khác nhau?", options: ["900", "1260", "360", "1512"], correct: 1, explanation: "TH1 (Tận cùng là 0): Chọn 4 chữ số còn lại từ 6 chữ số $\\Rightarrow A_6^4 = 360$ số. TH2 (Tận cùng 2, 4, 6): Tận cùng có 3 cách. Chữ số đầu (khác 0 và khác tận cùng) có 5 cách. Các vị trí giữa có $A_5^3 = 60$. Suy ra $3 \\times 5 \\times 60 = 900$. Tổng: $360 + 900 = 1260$ số." },
+        { id: "c8_p1_26", level: "VD", question: "Có 5 nam và 3 nữ xếp thành hàng dọc. Số cách xếp sao cho không có nữ nào đứng cạnh nhau là:", options: ["14400", "40320", "1440", "2400"], correct: 0, explanation: "Xếp 5 nam trước có $5! = 120$ cách. 5 nam tạo ra 6 khoảng trống (tính cả 2 đầu). Chọn 3 khoảng trống để xếp 3 nữ vào có $A_6^3 = 120$ cách. Tổng số cách: $120 \\times 120 = 14400$." },
+        { id: "c8_p1_27", level: "VD", question: "Một trường có 8 GV Toán (3 nữ, 5 nam), 4 GV Lý nam. Chọn 3 GV đi thanh tra sao cho có đủ 2 môn và phải có cả nam, nữ. Số cách chọn là:", options: ["78", "90", "120", "45"], correct: 1, explanation: "Bắt buộc có nữ (phải là nữ Toán, vì Lý không có nữ). Bắt buộc có Lý (phải là Lý nam).<br>TH1 (1 nữ Toán): Chọn 1 nữ Toán ($C_3^1$). Cần chọn thêm 2 người từ 5 Toán nam và 4 Lý nam sao cho có ít nhất 1 Lý nam $\\Rightarrow C_9^2 - C_5^2 = 26$ (Hoặc tính: 1 Toán nam & 1 Lý nam ($5 \\times 4=20$) + 2 Lý nam ($C_4^2=6$)). Số cách: $3 \\times 26 = 78$.<br>TH2 (2 nữ Toán): Chọn 2 nữ ($C_3^2=3$), chọn 1 Lý nam (4). Số cách = $3 \\times 4 = 12$.<br>Kết quả: $78+12=90$." },
+        { id: "c8_p1_28", level: "VD", question: "Có 8 bi xanh, 7 đỏ, 6 vàng. Chọn 5 bi sao cho có đủ 3 màu. Số cách chọn là:", options: ["14140", "20349", "2926", "1120"], correct: 0, explanation: "Dùng phần bù. Tổng số cách chọn ngẫu nhiên 5 bi là $C_{21}^5 = 20349$.<br>- Số cách chọn 1 màu: $C_8^5 + C_7^5 + C_6^5 = 56 + 21 + 6 = 83$.<br>- Số cách chọn đúng 2 màu: (Xanh+Đỏ) $C_{15}^5 - C_8^5 - C_7^5 = 2926$; (Xanh+Vàng) $C_{14}^5 - C_8^5 - C_6^5 = 1940$; (Đỏ+Vàng) $C_{13}^5 - C_7^5 - C_6^5 = 1260$. Tổng 2 màu: $2926 + 1940 + 1260 = 6126$.<br>- Số cách đủ 3 màu: $20349 - 83 - 6126 = 14140$." },
+        { id: "c8_p1_29", level: "VD", question: "Biết hệ số của $x^n$ trong khai triển $(1-2x)^n$ là -32. Tìm số hạng chứa $x^4$ trong khai triển đó.", options: ["80", "-80", "$80x^4$", "$-80x^4$"], correct: 2, explanation: "Hệ số của $x^n$ là $C_n^n (-2)^n = (-2)^n$. Theo đề $(-2)^n = -32 \\Rightarrow n=5$. Ta khai triển $(1-2x)^5$. Số hạng chứa $x^4$ ứng với $k=4$ là: $C_5^4 \\times 1^1 \\times (-2x)^4 = 5 \\times 16x^4 = 80x^4$." },
+        { id: "c8_p1_30", level: "VD", question: "Cho đa thức $P(x) = (x+2)^5 - (x-2)^5$. Số hạng tự do của khai triển đa thức là:", options: ["64", "0", "32", "-32"], correct: 0, explanation: "Số hạng tự do của đa thức $P(x)$ được tính khi cho $x=0$. Ta có $P(0) = (0+2)^5 - (0-2)^5 = 2^5 - (-2)^5 = 32 - (-32) = 64$." }
+    ],
+    part2: [
+        // --- NHẬN BIẾT (4 câu) ---
+        {
+            id: "c8_p2_1", level: "NB", question: "Cửa hàng có 3 loại áo và 2 loại quần. Khách mua theo giá khuyến mãi các lựa chọn: chỉ áo, chỉ quần, hoặc 1 bộ. Khi đó:",
+            items: [
+                { text: "Có 3 cách để chọn chỉ một chiếc áo.", isTrue: true },
+                { text: "Có 7 cách để chọn một món đồ bất kỳ (chỉ áo hoặc chỉ quần).", isTrue: false },
+                { text: "Có 6 cách để chọn một bộ gồm cả áo và quần.", isTrue: true },
+                { text: "Nếu thêm 2 loại quần mới, số cách chọn một bộ quần áo tăng thêm 9 cách.", isTrue: false }
+            ],
+            explanation: `
+                <ul class='expl-list'>
+                    <li><b>a) Đúng:</b> Cửa hàng có 3 loại áo khác nhau, nên có 3 cách chọn áo.</li>
+                    <li><b>b) Sai:</b> Áp dụng quy tắc cộng, để chọn 1 món đồ duy nhất ta có $3 + 2 = 5$ cách (chứ không phải 7 cách).</li>
+                    <li><b>c) Đúng:</b> Chọn 1 bộ quần áo gồm 2 công đoạn (chọn áo và chọn quần). Áp dụng quy tắc nhân: $3 \\times 2 = 6$ cách.</li>
+                    <li><b>d) Sai:</b> Nếu thêm 2 quần, số loại quần là 4. Số cách chọn một bộ lúc này là $3 \\times 4 = 12$. Tăng thêm $12 - 6 = 6$ cách (không phải 9).</li>
+                </ul>`
+        },
+        {
+            id: "c8_p2_2", level: "NB", question: "Xét các khái niệm và công thức tổ hợp, chỉnh hợp, hoán vị (với $0 \\le k \\le n$):",
+            items: [
+                { text: "Số hoán vị của n phần tử là $P_n = n!$.", isTrue: true },
+                { text: "Công thức liên hệ là $C_n^k = A_n^k \\times k!$.", isTrue: false },
+                { text: "Để chọn ra 3 học sinh từ 10 học sinh đi lao động, ta dùng tổ hợp.", isTrue: true },
+                { text: "Ta luôn có tính chất $C_{10}^3 = C_{10}^7$.", isTrue: true }
+            ],
+            explanation: `
+                <ul class='expl-list'>
+                    <li><b>a) Đúng:</b> Đây là định nghĩa chuẩn của số hoán vị.</li>
+                    <li><b>b) Sai:</b> Công thức đúng thể hiện mối liên hệ phải là $A_n^k = C_n^k \\times k!$ hoặc $C_n^k = \\frac{A_n^k}{k!}$.</li>
+                    <li><b>c) Đúng:</b> Đi lao động là công việc như nhau, không phân biệt thứ tự/chức vụ của 3 học sinh, do đó dùng Tổ hợp.</li>
+                    <li><b>d) Đúng:</b> Áp dụng tính chất đối xứng của tổ hợp $C_n^k = C_n^{n-k}$ với $n=10, k=3$.</li>
+                </ul>`
+        },
+        {
+            id: "c8_p2_3", level: "NB", question: "Có 5 bông hồng vàng, 4 bông hồng đỏ. Chọn 4 bông. Đánh giá các mệnh đề:",
+            items: [
+                { text: "Số cách chọn 4 bông tùy ý là 126 cách.", isTrue: true },
+                { text: "Số cách chọn 4 bông có ít nhất 3 bông vàng là 40 cách.", isTrue: false },
+                { text: "Số cách chọn 4 bông mà số bông mỗi màu bằng nhau là 60 cách.", isTrue: true },
+                { text: "Số cách chọn 4 bông có đủ hai màu là 120 cách.", isTrue: true }
+            ],
+            explanation: `
+                <ul class='expl-list'>
+                    <li><b>a) Đúng:</b> Tổng có 9 bông hoa. Số cách chọn ngẫu nhiên 4 bông từ 9 bông là $C_9^4 = 126$.</li>
+                    <li><b>b) Sai:</b> Ít nhất 3 bông vàng gồm 2 trường hợp. TH1 (3 vàng, 1 đỏ): $C_5^3 \\times C_4^1 = 40$. TH2 (4 bông vàng): $C_5^4 = 5$. Tổng là $40 + 5 = 45$ cách (không phải 40).</li>
+                    <li><b>c) Đúng:</b> Số lượng bằng nhau tức là 2 vàng và 2 đỏ. Số cách là $C_5^2 \\times C_4^2 = 10 \\times 6 = 60$ cách.</li>
+                    <li><b>d) Đúng:</b> Áp dụng phần bù. Lấy tổng số cách (126) trừ đi trường hợp toàn vàng ($C_5^4=5$) và toàn đỏ ($C_4^4=1$). Ta được $126 - 5 - 1 = 120$ cách.</li>
+                </ul>`
+        },
+        {
+            id: "c8_p2_4", level: "NB", question: "Cho khai triển $(1-2x)^n = a_0 + a_1x + ... + a_nx^n$. Biết hệ số $a_n = -32$. Khi đó:",
+            items: [
+                { text: "Khai triển này có n+1 số hạng.", isTrue: true },
+                { text: "Ta tìm được $n = 6$.", isTrue: false },
+                { text: "Hệ số của số hạng chứa $x^4$ là 80.", isTrue: true },
+                { text: "Tổng các hệ số $a_0 + a_1 + ... + a_n = -1$.", isTrue: true }
+            ],
+            explanation: `
+                <ul class='expl-list'>
+                    <li><b>a) Đúng:</b> Nhị thức Newton bậc $n$ luôn có $n+1$ số hạng.</li>
+                    <li><b>b) Sai:</b> Ta có hệ số chứa $x^n$ là $a_n = C_n^n (-2)^n = (-2)^n$. Theo bài ra $(-2)^n = -32 \\Rightarrow n=5$ (chứ không phải 6).</li>
+                    <li><b>c) Đúng:</b> Với $n=5$, hệ số chứa $x^4$ ứng với $k=4$ là $C_5^4 (-2)^4 = 5 \\times 16 = 80$.</li>
+                    <li><b>d) Đúng:</b> Tổng các hệ số là giá trị của biểu thức khi $x=1$. Ta có $(1 - 2(1))^5 = (-1)^5 = -1$.</li>
+                </ul>`
+        },
+        // --- THÔNG HIỂU (2 câu) ---
+        {
+            id: "c8_p2_5", level: "TH", question: "Thư viện có 5 quyển SGK (2 Toán, 2 Văn, 1 Anh) và 7 SBT (3 Toán, 2 Văn, 2 Anh).",
+            items: [
+                { text: "Có 12 cách chọn ngẫu nhiên một quyển sách.", isTrue: true },
+                { text: "Có 35 cách chọn 1 SGK và 1 SBT.", isTrue: true },
+                { text: "Khi chọn 2 quyển sách từ kệ, có 10 cách sao cho cả 2 khác môn.", isTrue: false },
+                { text: "Có 12 cách chọn 1 bộ (1 SGK, 1 SBT) CÙNG MÔN.", isTrue: true }
+            ],
+            explanation: `
+                <ul class='expl-list'>
+                    <li><b>a) Đúng:</b> Tổng số sách là $5+7=12$ cuốn. Số cách chọn ngẫu nhiên 1 cuốn là 12 cách.</li>
+                    <li><b>b) Đúng:</b> Chọn 1 SGK và 1 SBT là 2 công đoạn liên tiếp. Theo quy tắc nhân: $5 \\times 7 = 35$ cách.</li>
+                    <li><b>c) Sai:</b> Tổng số sách theo môn là: Toán (5), Văn (4), Anh (3). Chọn 2 quyển khác môn: (Toán-Văn) $5 \\times 4=20$, (Toán-Anh) $5 \\times 3=15$, (Văn-Anh) $4 \\times 3=12$. Tổng $20+15+12=47$ cách.</li>
+                    <li><b>d) Đúng:</b> Bộ SGK và SBT cùng môn: Toán ($2 \\times 3=6$), Văn ($2 \\times 2=4$), Anh ($1 \\times 2=2$). Tổng: $6+4+2=12$ cách.</li>
+                </ul>`
+        },
+        {
+            id: "c8_p2_6", level: "TH", question: "Có 5 nam sinh và 3 nữ sinh xếp thành một hàng dọc:",
+            items: [
+                { text: "Số cách xếp 8 học sinh tùy ý là $P_8 = 40320$.", isTrue: true },
+                { text: "Số cách xếp sao cho học sinh CÙNG GIỚI đứng cạnh nhau là 1440.", isTrue: true },
+                { text: "Số cách xếp sao cho KHÔNG có hai nữ nào đứng cạnh nhau là 2400.", isTrue: false },
+                { text: "Số cách chọn 3 nam và 2 nữ đi văn nghệ là 45 cách.", isTrue: false }
+            ],
+            explanation: `
+                <ul class='expl-list'>
+                    <li><b>a) Đúng:</b> Hoán vị toàn bộ 8 phần tử: $8! = 40320$ cách.</li>
+                    <li><b>b) Đúng:</b> Coi 5 nam là khối X, 3 nữ là khối Y. Hoán vị 2 khối ($2!$). Hoán vị trong từng khối ($5!$ và $3!$). Tổng: $2! \\times 5! \\times 3! = 1440$.</li>
+                    <li><b>c) Sai:</b> Xếp 5 nam tạo ra 6 khoảng trống (tính cả 2 đầu). Chọn 3 khoảng trống xếp 3 nữ ($A_6^3$). Kết quả: $5! \\times A_6^3 = 120 \\times 120 = 14400$ (không phải 2400).</li>
+                    <li><b>d) Sai:</b> Lựa chọn nhóm không phân biệt chức vụ dùng tổ hợp: $C_5^3 \\times C_3^2 = 10 \\times 3 = 30$ cách (không phải 45).</li>
+                </ul>`
+        },
+        // --- VẬN DỤNG (2 câu) ---
+        {
+            id: "c8_p2_7", level: "VD", question: "Xét số tự nhiên $n = \\overline{abcde}$ lập từ tập $A = \\{0; 1; 2; 3; 4; 5; 6; 7; 8; 9\\}$.",
+            items: [
+                { text: "Có 100000 số tự nhiên n thỏa mãn định dạng trên.", isTrue: false },
+                { text: "Có 27216 số n mà các chữ số đôi một khác nhau.", isTrue: true },
+                { text: "Có 13440 số lẻ có 5 chữ số đôi một khác nhau.", isTrue: true },
+                { text: "Có 13776 số chẵn có 5 chữ số đôi một khác nhau.", isTrue: true }
+            ],
+            explanation: `
+                <ul class='expl-list'>
+                    <li><b>a) Sai:</b> Do là số tự nhiên có 5 chữ số nên $a \\ne 0$, do đó a chỉ có 9 cách chọn. Các vị trí khác tự do nên có $9 \\times 10^4 = 90000$ số.</li>
+                    <li><b>b) Đúng:</b> Lập số 5 chữ số phân biệt: a (9 cách), b (9 cách), c (8), d (7), e (6). Số lượng: $9 \\times 9 \\times 8 \\times 7 \\times 6 = 27216$.</li>
+                    <li><b>c) Đúng:</b> Lập số lẻ 5 chữ số phân biệt: e có 5 cách chọn. a khác 0 và khác e (8 cách). b, c, d được chọn từ 8 chữ số còn lại ($A_8^3 = 336$). Tổng: $5 \\times 8 \\times 336 = 13440$.</li>
+                    <li><b>d) Đúng:</b> Dùng phần bù: Tổng số có 5 chữ số phân biệt trừ đi số lượng số lẻ $\\Rightarrow 27216 - 13440 = 13776$ số chẵn.</li>
+                </ul>`
+        },
+        {
+            id: "c8_p2_8", level: "VD", question: "Cho khai triển $(x - \\frac{2}{x^2})^{15}$. Các mệnh đề sau:",
+            items: [
+                { text: "Khai triển có tất cả 15 số hạng.", isTrue: false },
+                { text: "Số hạng tổng quát là $T_{k+1} = C_{15}^k x^{15-3k} (-2)^k$.", isTrue: true },
+                { text: "Số hạng không chứa x là số hạng thứ 6.", isTrue: true },
+                { text: "Hệ số của số hạng không chứa x là $-100352$.", isTrue: false }
+            ],
+            explanation: `
+                <ul class='expl-list'>
+                    <li><b>a) Sai:</b> Khai triển bậc 15 luôn có $15 + 1 = 16$ số hạng.</li>
+                    <li><b>b) Đúng:</b> Áp dụng công thức: $T_{k+1} = C_{15}^k x^{15-k} (-2 x^{-2})^k = C_{15}^k (-2)^k x^{15-3k}$.</li>
+                    <li><b>c) Đúng:</b> Số hạng không chứa x tương ứng với bậc của x bằng 0 $\\Rightarrow 15 - 3k = 0 \\Rightarrow k = 5$. Mà $k=5$ ứng với số hạng thứ $k+1 = 6$.</li>
+                    <li><b>d) Sai:</b> Thế $k=5$ vào, hệ số là $C_{15}^5 (-2)^5 = 3003 \\times (-32) = -96096$.</li>
+                </ul>`
+        }
+    ],
+    part3: [
+        // --- NHẬN BIẾT (6 câu) ---
+        { id: "c8_p3_1", level: "NB", question: "Bạn Nam cần đặt mật khẩu vali gồm 4 chữ số khác nhau từ các chữ số 0, 1, 2, ..., 9. Hỏi có bao nhiêu cách chọn mật khẩu?", keywords: ["5040"], explanation: "Chọn 4 chữ số có phân biệt thứ tự từ 10 chữ số (do mật khẩu cho phép chữ số 0 đứng ở vị trí đầu): $A_{10}^4 = 5040$." },
+        { id: "c8_p3_2", level: "NB", question: "Khai triển $(x+2)^4$ có tất cả bao nhiêu số hạng?", keywords: ["5", "năm"], explanation: "Khai triển bậc $n$ luôn có $n+1$ số hạng. Ở đây $n=4 \\Rightarrow$ có 5 số hạng." },
+        { id: "c8_p3_3", level: "NB", question: "Có 8 điểm phân biệt trên mặt phẳng không có 3 điểm nào thẳng hàng. Số đoạn thẳng tạo thành là bao nhiêu?", keywords: ["28", "hai tám"], explanation: "Mỗi đoạn thẳng tương ứng với việc chọn 2 điểm không phân biệt thứ tự: $C_8^2 = 28$." },
+        { id: "c8_p3_4", level: "NB", question: "Có bao nhiêu cách xếp 5 bạn học sinh thành một hàng dọc?", keywords: ["120", "một trăm hai mươi"], explanation: "Xếp 5 học sinh vào 5 vị trí là hoán vị của 5 phần tử: $P_5 = 5! = 120$." },
+        { id: "c8_p3_5", level: "NB", question: "Một tổ có 10 nam và 5 nữ. Số cách chọn ra 1 người làm tổ trưởng là?", keywords: ["15", "mười lăm"], explanation: "Chọn 1 người bất kỳ từ $10+5=15$ người. Áp dụng quy tắc cộng: 15 cách." },
+        { id: "c8_p3_6", level: "NB", question: "Bạn An có 3 cái áo và 4 cái quần. Số cách chọn 1 bộ quần áo là bao nhiêu?", keywords: ["12", "mười hai"], explanation: "Áp dụng quy tắc nhân cho 2 công đoạn độc lập: $3 \\times 4 = 12$ cách." },
+        
+        // --- THÔNG HIỂU (4 câu) ---
+        { id: "c8_p3_7", level: "TH", question: "Vòng chung kết có 8 thí sinh (có bạn Việt). Cần chọn 3 thí sinh trao giải Nhất, Nhì, Ba. Biết Việt chắc chắn có giải. Hỏi có bao nhiêu cách trao giải?", keywords: ["126"], explanation: "Việt có thể nhận 1 trong 3 giải (có 3 cách). 2 giải còn lại được chọn từ 7 thí sinh còn lại và có phân biệt thứ hạng $\\Rightarrow A_7^2 = 42$. Tổng số cách: $3 \\times 42 = 126$." },
+        { id: "c8_p3_8", level: "TH", question: "Tìm số hạng không chứa $x$ trong khai triển $(1-2x)^5$.", keywords: ["1", "một"], explanation: "Số hạng tổng quát: $C_5^k 1^{5-k} (-2x)^k$. Không chứa $x \\Rightarrow k=0$. Số hạng đó là $C_5^0 (-2)^0 = 1$." },
+        { id: "c8_p3_9", level: "TH", question: "Từ tập $A = \\{1, 2, 3, 4, 5, 6\\}$ lập được bao nhiêu số tự nhiên có 3 chữ số khác nhau và chia hết cho 5?", keywords: ["20", "hai mươi"], explanation: "Số chia hết cho 5 phải có chữ số tận cùng là 5 $\\Rightarrow$ vị trí hàng đơn vị có 1 cách chọn. Hai chữ số đầu được chọn từ 5 chữ số còn lại $\\Rightarrow A_5^2 = 20$. Kết quả: 20 số." },
+        { id: "c8_p3_10", level: "TH", question: "Nhóm có 6 nam và 4 nữ. Số cách chọn 3 người có đúng 1 nữ là bao nhiêu?", keywords: ["60", "sáu mươi"], explanation: "Để nhóm có đúng 1 nữ, ta chọn 1 nữ ($C_4^1 = 4$) và 2 nam ($C_6^2 = 15$). Tích lại: $4 \\times 15 = 60$ cách." },
+        
+        // --- VẬN DỤNG (2 câu) ---
+        { id: "c8_p3_11", level: "VD", question: "Một bức tường vuông chia thành 4 ô (2x2). Dùng 4 màu khác nhau sơn tường sao cho mỗi ô 1 màu, và những ô kề nhau không trùng màu. Số cách sơn?", keywords: ["84"], explanation: "TH1 (2 ô chéo chính cùng màu): Có 4 cách chọn màu cho 2 ô chéo này. 2 ô còn lại mỗi ô có 3 cách chọn $\\Rightarrow 4 \\times 1 \\times 3 \\times 3 = 36$ cách.<br>TH2 (2 ô chéo khác màu): Chọn màu cho 2 ô chéo có $4 \\times 3 = 12$ cách. 2 ô còn lại mỗi ô bị kẹp bởi 2 màu khác nhau nên chỉ có 2 cách chọn $\\Rightarrow 12 \\times 2 \\times 2 = 48$ cách.<br>Tổng cộng: $36 + 48 = 84$ cách." },
+        { id: "c8_p3_12", level: "VD", question: "Trường có 8 GV Toán (3 nữ, 5 nam) và 4 GV Lý nam. Chọn đoàn 3 người đủ 2 môn và phải có nam có nữ. Tính số cách chọn.", keywords: ["90", "chín mươi"], explanation: "Do giáo viên nữ chỉ dạy môn Toán, nên trong đoàn bắt buộc phải có ít nhất 1 nữ Toán.<br>TH1 (1 nữ Toán): Chọn 1 Nữ Toán, 1 Nam Toán, 1 Nam Lý ($3 \\times 5 \\times 4 = 60$) HOẶC 1 Nữ Toán, 2 Nam Lý ($3 \\times C_4^2 = 18$). Tổng TH1: $60+18=78$ cách.<br>TH2 (2 nữ Toán): Bắt buộc người còn lại phải là Nam Lý để đủ 2 môn. Chọn 2 Nữ Toán, 1 Nam Lý ($C_3^2 \\times 4 = 12$ cách).<br>Tổng cộng: $78+12=90$ cách." }
+    ]
+        };
+
+        // Biến trạng thái toàn cục
+        let currentTest = { part1: [], part2: [], part3: [] };
+        let currentPartIndex = 1;
+        let currentQuestionIdx = 0;
+        let score = 0;
+        let currentQuestionGlobalIndex = 1;
+        const TEST_TOTAL_QUESTIONS = 22; // 12 + 4 + 6
+
+        // Logic sinh đề thi theo cấu trúc và ma trận
+        function generateTest() {
+            let prevIds = JSON.parse(localStorage.getItem('prevTestIdsChuong8') || '[]');
+            
+            // Hàm lấy câu hỏi: ưu tiên các câu chưa làm ở lượt trước để đảm bảo tỷ lệ trùng <= 2
+            function sampleQuestions(pool, count, prevIdList) {
+                let unused = pool.filter(q => !prevIdList.includes(q.id)).sort(() => 0.5 - Math.random());
+                let used = pool.filter(q => prevIdList.includes(q.id)).sort(() => 0.5 - Math.random());
+                let res = [];
+                while(res.length < count && unused.length > 0) res.push(unused.pop());
+                while(res.length < count && used.length > 0) res.push(used.pop());
+                return res;
+            }
+
+            // P1: 12 câu (6 NB, 4 TH, 2 VD)
+            currentTest.part1 = [
+                ...sampleQuestions(bankData.part1.filter(q => q.level === 'NB'), 6, prevIds),
+                ...sampleQuestions(bankData.part1.filter(q => q.level === 'TH'), 4, prevIds),
+                ...sampleQuestions(bankData.part1.filter(q => q.level === 'VD'), 2, prevIds)
+            ].sort(() => 0.5 - Math.random());
+
+            // P2: 4 câu (2 NB, 1 TH, 1 VD)
+            currentTest.part2 = [
+                ...sampleQuestions(bankData.part2.filter(q => q.level === 'NB'), 2, prevIds),
+                ...sampleQuestions(bankData.part2.filter(q => q.level === 'TH'), 1, prevIds),
+                ...sampleQuestions(bankData.part2.filter(q => q.level === 'VD'), 1, prevIds)
+            ].sort(() => 0.5 - Math.random());
+
+            // P3: 6 câu (3 NB, 2 TH, 1 VD)
+            currentTest.part3 = [
+                ...sampleQuestions(bankData.part3.filter(q => q.level === 'NB'), 3, prevIds),
+                ...sampleQuestions(bankData.part3.filter(q => q.level === 'TH'), 2, prevIds),
+                ...sampleQuestions(bankData.part3.filter(q => q.level === 'VD'), 1, prevIds)
+            ].sort(() => 0.5 - Math.random());
+
+            // Cập nhật lịch sử
+            let newIds = [
+                ...currentTest.part1.map(q=>q.id), 
+                ...currentTest.part2.map(q=>q.id), 
+                ...currentTest.part3.map(q=>q.id)
+            ];
+            localStorage.setItem('prevTestIdsChuong8', JSON.stringify(newIds));
+            
+            // Reset trạng thái thi
+            currentPartIndex = 1;
+            currentQuestionIdx = 0;
+            score = 0;
+            currentQuestionGlobalIndex = 1;
+        }
+
+        const container = document.getElementById('game-container');
+        const nextBtn = document.getElementById('next-btn');
+        const hintBtn = document.getElementById('hint-btn');
+        const scoreDisplay = document.getElementById('score');
+        const progressBar = document.getElementById('progress-bar');
+        const partTitle = document.getElementById('part-title');
+        const qCounter = document.getElementById('question-counter');
+
+        function renderQuestion() {
+            container.innerHTML = '';
+            nextBtn.classList.add('hidden');
+            hintBtn.classList.add('hidden');
+            
+            let q;
+            if (currentPartIndex === 1) {
+                partTitle.innerText = "Phần 1: Trắc nghiệm (0.25Đ/Câu)";
+                q = currentTest.part1[currentQuestionIdx];
+                renderPart1(q);
+            } else if (currentPartIndex === 2) {
+                partTitle.innerText = "Phần 2: Đúng/Sai (Tối đa 1.0Đ/Câu)";
+                q = currentTest.part2[currentQuestionIdx];
+                renderPart2(q);
+            } else {
+                partTitle.innerText = "Phần 3: Trả lời ngắn (0.5Đ/Câu)";
+                q = currentTest.part3[currentQuestionIdx];
+                renderPart3(q);
+            }
+            if (window.MathJax && typeof window.MathJax.typeset === 'function') {
+                MathJax.typeset();
+            }
+        }
+
+        function renderPart1(q) {
+            const html = `
+                <div class="animate__animated animate__fadeIn">
+                    <div class="mb-6 pb-4 border-b border-gray-100 flex justify-between items-start">
+                        <p class="text-xl font-bold text-gray-800 leading-relaxed pr-4">Câu ${currentQuestionGlobalIndex}: ${q.question}</p>
+                        <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2 py-1 rounded whitespace-nowrap">${q.level}</span>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        ${q.options.map((opt, i) => `
+                            <button onclick="checkPart1(${i})" class="opt-btn group flex items-center p-4 bg-white border-2 border-gray-200 rounded-2xl hover:border-blue-500 hover:bg-blue-50 transition-all font-medium text-left">
+                                <span class="w-8 h-8 rounded-full bg-gray-100 text-gray-600 flex justify-center items-center font-bold mr-3 group-hover:bg-blue-600 group-hover:text-white transition-colors">${String.fromCharCode(65 + i)}</span>
+                                <span class="flex-1">${opt}</span>
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            container.innerHTML = html;
+        }
+
+        function checkPart1(idx) {
+            const q = currentTest.part1[currentQuestionIdx];
+            const btns = document.querySelectorAll('.opt-btn');
+            btns.forEach(b => {
+                b.disabled = true;
+                b.classList.remove('hover:border-blue-500', 'hover:bg-blue-50');
+            });
+            
+            if (idx === q.correct) {
+                btns[idx].classList.add('bg-green-50', 'border-green-500');
+                btns[idx].querySelector('span').classList.add('bg-green-500', 'text-white');
+                score += 0.25; 
+            } else {
+                btns[idx].classList.add('bg-red-50', 'border-red-500');
+                btns[idx].querySelector('span').classList.add('bg-red-500', 'text-white');
+                
+                btns[q.correct].classList.add('bg-green-50', 'border-green-500');
+                btns[q.correct].querySelector('span').classList.add('bg-green-500', 'text-white');
+            }
+            showExplanation(q.explanation);
+        }
+
+        function renderPart2(q) {
+            const html = `
+                <div class="animate__animated animate__fadeIn">
+                    <div class="mb-6 pb-4 border-b border-gray-100 flex justify-between items-start">
+                        <p class="text-xl font-bold text-gray-800 leading-relaxed pr-4">Câu ${currentQuestionGlobalIndex}: ${q.question}</p>
+                        <span class="bg-purple-100 text-purple-800 text-xs font-bold px-2 py-1 rounded whitespace-nowrap">${q.level}</span>
+                    </div>
+                    <div class="space-y-4">
+                        ${q.items.map((item, i) => `
+                            <div class="flex flex-col md:flex-row md:items-center justify-between p-4 bg-gray-50 rounded-2xl border border-gray-200">
+                                <span class="flex-1 mb-3 md:mb-0 md:mr-4 font-medium">${String.fromCharCode(97 + i)}) ${item.text}</span>
+                                <div class="flex gap-2 min-w-max">
+                                    <button onclick="selectPart2(${i}, true)" class="ds-btn ds-btn-${i}-true px-6 py-2 rounded-xl border-2 border-gray-300 font-bold hover:bg-gray-200 transition-colors">Đúng</button>
+                                    <button onclick="selectPart2(${i}, false)" class="ds-btn ds-btn-${i}-false px-6 py-2 rounded-xl border-2 border-gray-300 font-bold hover:bg-gray-200 transition-colors">Sai</button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <button id="check-part2-btn" onclick="checkPart2()" class="mt-6 w-full py-4 bg-blue-600 text-white rounded-xl font-bold text-lg hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200">Kiểm tra kết quả</button>
+                </div>
+            `;
+            container.innerHTML = html;
+            window.tempSelections = new Array(q.items.length).fill(null);
+        }
+
+        function selectPart2(itemIdx, val) {
+            document.querySelector(`.ds-btn-${itemIdx}-true`).classList.remove('active-true');
+            document.querySelector(`.ds-btn-${itemIdx}-false`).classList.remove('active-false');
+            
+            if(val) {
+                document.querySelector(`.ds-btn-${itemIdx}-true`).classList.add('active-true');
+            } else {
+                document.querySelector(`.ds-btn-${itemIdx}-false`).classList.add('active-false');
+            }
+            window.tempSelections[itemIdx] = val;
+        }
+
+        function checkPart2() {
+            if(window.tempSelections.includes(null)) {
+                alert("Vui lòng chọn Đúng/Sai cho tất cả các ý trước khi kiểm tra!");
+                return;
+            }
+
+            const q = currentTest.part2[currentQuestionIdx];
+            let correctCount = 0;
+            
+            document.querySelectorAll('.ds-btn').forEach(b => b.disabled = true);
+
+            window.tempSelections.forEach((sel, i) => {
+                const isCorrect = sel === q.items[i].isTrue;
+                if (isCorrect) {
+                    correctCount++;
+                } else {
+                    const btnClass = sel ? `.ds-btn-${i}-true` : `.ds-btn-${i}-false`;
+                    document.querySelector(btnClass).style.opacity = '0.5';
+                }
+            });
+
+            // Thang điểm Bộ GD: 1 ý=0.1, 2 ý=0.25, 3 ý=0.5, 4 ý=1.0
+            const bonus = [0, 0.1, 0.25, 0.5, 1.0];
+            score += bonus[correctCount];
+            
+            document.getElementById('check-part2-btn').classList.add('hidden');
+            showExplanation(`<div class="mb-3 text-blue-700 font-bold">🎯 Bạn chọn đúng ${correctCount}/4 ý. Cộng ${bonus[correctCount]} điểm.</div>` + q.explanation);
+        }
+
+        function renderPart3(q) {
+            const html = `
+                <div class="animate__animated animate__fadeIn">
+                    <div class="mb-6 pb-4 border-b border-gray-100 flex justify-between items-start">
+                        <p class="text-xl font-bold text-gray-800 leading-relaxed pr-4">Câu ${currentQuestionGlobalIndex}: ${q.question}</p>
+                        <span class="bg-teal-100 text-teal-800 text-xs font-bold px-2 py-1 rounded whitespace-nowrap">${q.level}</span>
+                    </div>
+                    <div class="bg-blue-50 p-6 rounded-2xl border border-blue-100">
+                        <label class="block text-sm font-bold text-blue-800 mb-2 uppercase">Nhập đáp án của bạn (Số/Chữ ngắn gọn)</label>
+                        <input type="text" id="ans-3" class="w-full p-4 border-2 border-blue-200 rounded-xl focus:border-blue-600 focus:ring focus:ring-blue-200 focus:outline-none text-xl font-semibold text-center" placeholder="...">
+                    </div>
+                    <button onclick="checkPart3()" class="mt-6 w-full py-4 bg-blue-600 text-white rounded-xl font-bold text-lg hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200">Gửi đáp án</button>
+                </div>
+            `;
+            container.innerHTML = html;
+            document.getElementById('ans-3').focus();
+        }
+
+        function checkPart3() {
+            const q = currentTest.part3[currentQuestionIdx];
+            const userAns = document.getElementById('ans-3').value.toLowerCase().trim();
+            if(!userAns) { alert("Vui lòng nhập đáp án!"); return; }
+
+            const inputField = document.getElementById('ans-3');
+            inputField.disabled = true;
+
+            const isCorrect = q.keywords.some(k => userAns.includes(k.toLowerCase()));
+            
+            if (isCorrect) {
+                inputField.classList.add('bg-green-100', 'border-green-500', 'text-green-800');
+                score += 0.5; 
+            } else {
+                inputField.classList.add('bg-red-100', 'border-red-500', 'text-red-800');
+            }
+            
+            event.target.classList.add('hidden');
+            showExplanation(`Đáp án đúng: <b class="text-green-600">${q.keywords[0]}</b><br><br>${q.explanation}`);
+        }
+
+        function showExplanation(txt) {
+            const div = document.createElement('div');
+            div.className = "mt-6 p-6 bg-yellow-50 border-2 border-yellow-300 rounded-2xl text-gray-800 animate__animated animate__fadeInUp mathjax-box shadow-sm";
+            div.innerHTML = `<p class="font-black text-amber-600 mb-3 uppercase text-sm flex items-center tracking-wider"><span class="text-2xl mr-2">💡</span> Hướng dẫn giải chi tiết:</p><div class="text-[1.05rem] leading-relaxed font-medium">${txt}</div>`;
+            container.appendChild(div);
+            
+            nextBtn.classList.remove('hidden');
+            updateProgress();
+            if (window.MathJax && typeof window.MathJax.typeset === 'function') {
+                MathJax.typeset();
+            }
+        }
+
+        function updateProgress() {
+            const progress = (currentQuestionGlobalIndex / TEST_TOTAL_QUESTIONS) * 100;
+            progressBar.style.width = progress + '%';
+            scoreDisplay.innerText = `Điểm: ${score.toFixed(2)}`;
+            qCounter.innerText = currentQuestionGlobalIndex;
+        }
+
+        nextBtn.addEventListener('click', () => {
+            currentQuestionGlobalIndex++;
+            currentQuestionIdx++;
+
+            if (currentPartIndex === 1 && currentQuestionIdx >= currentTest.part1.length) {
+                currentPartIndex = 2; currentQuestionIdx = 0;
+            } else if (currentPartIndex === 2 && currentQuestionIdx >= currentTest.part2.length) {
+                currentPartIndex = 3; currentQuestionIdx = 0;
+            } else if (currentPartIndex === 3 && currentQuestionIdx >= currentTest.part3.length) {
+                showResult();
+                return;
+            }
+            renderQuestion();
+            updateProgress();
+        });
+
+        function showResult() {
+            document.getElementById('result-modal').classList.remove('hidden');
+            document.getElementById('result-score').innerHTML = `${score.toFixed(2)}<span class="text-2xl text-gray-400">/10</span>`;
+            
+            const icon = document.getElementById('result-icon');
+            const name = document.getElementById('result-name');
+            
+            if (score >= 8) {
+                icon.innerText = "🌟";
+                name.innerText = "XUẤT SẮC!";
+                name.className = "text-4xl font-black text-green-600 mb-2 uppercase";
+            } else if (score >= 5) {
+                icon.innerText = "👍";
+                name.innerText = "ĐẠT YÊU CẦU";
+                name.className = "text-4xl font-black text-blue-600 mb-2 uppercase";
+            } else {
+                icon.innerText = "📚";
+                name.innerText = "CẦN CỐ GẮNG HƠN";
+                name.className = "text-4xl font-black text-red-600 mb-2 uppercase";
+            }
+        }
+
+        // Logic khởi chạy màn hình
+        function startGame() {
+            document.getElementById('intro-screen').classList.add('hidden');
+            const appDiv = document.getElementById('app');
+            appDiv.classList.remove('hidden');
+            appDiv.classList.add('animate__fadeIn');
+            renderQuestion();
+        }
+
+        // Khởi tạo bài thi khi load trang
+        generateTest();
+        if (window.MathJax && typeof window.MathJax.typeset === 'function') {
+            MathJax.typeset();
+        }
+    </script>
+</body>
+</html>
